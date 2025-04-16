@@ -3,6 +3,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'firebase_options.dart';
+import 'pages/calendar_page.dart';
+import 'pages/todo_page.dart';
+import 'pages/pomodoro_page.dart';
+import 'pages/user_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -137,12 +141,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    const Center(child: Text('📅 Calendar')),
-    const Center(child: Text('📝 To-Do List')),
-    const Center(child: Text('⏱️ Pomodoro Timer')),
-    const Center(child: Text('👤 User Profile')),
-  ];
+final List<Widget> _pages = const [
+  CalendarPage(),
+  TodoPage(),
+  PomodoroPage(),
+  UserPage(),
+];
 
   void _onTabTapped(int index) {
     setState(() {
