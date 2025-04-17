@@ -141,7 +141,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-final List<Widget> _pages = const [
+final List<Widget> _pages =  [
   CalendarPage(),
   TodoPage(),
   PomodoroPage(),

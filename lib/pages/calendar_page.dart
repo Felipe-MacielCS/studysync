@@ -1,77 +1,58 @@
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import '../services/calendar_service.dart';
+import 'package:googleapis/calendar/v3.dart';
+import 'package:study_sync/services/calendar_service.dart';
 
 class CalendarPage extends StatefulWidget {
-  const CalendarPage({super.key});
-
   @override
-  State<CalendarPage> createState() => _CalendarPageState();
+  _CalendarPageState createState() => _CalendarPageState();
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  List<Map<String, dynamic>> events = [];
-  bool isLoading = true;
-  String? error;
+  final _calendarService = CalendarService();
+  List<Event> _events = [];
 
   @override
   void initState() {
     super.initState();
-    loadEvents();
+    _fetchEvents();
   }
 
-  Future<void> loadEvents() async {
-    try {
-      final googleUser = await GoogleSignIn().signInSilently();
-      final accessToken = (await googleUser?.authentication)?.accessToken;
-      if (accessToken == null) {
-        setState(() {
-          error = 'Access token missing';
-          isLoading = false;
-        });
-        return;
-      }
-
-      final fetchedEvents = await fetchCalendarEvents(accessToken);
-      setState(() {
-        events = fetchedEvents;
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        error = e.toString();
-        isLoading = false;
-      });
+Future<void> _fetchEvents() async {
+  try {
+    final events = await _calendarService.getEvents();
+    print('Fetched events: ${events.length}'); // Log the number of events
+    for (var event in events) {
+      print('Event: ${event.summary} at ${event.start?.dateTime}');
     }
+
+    setState(() {
+      _events = events;
+    });
+  } catch (e) {
+    print('Error fetching events: $e');
+    setState(() {
+      _events = []; // prevent endless spinner if error happens
+    });
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (error != null) {
-      return Center(child: Text('Error: $error'));
-    }
-
-    if (events.isEmpty) {
-      return const Center(child: Text('No events found.'));
-    }
-
-    return ListView.builder(
-      itemCount: events.length,
-      itemBuilder: (context, index) {
-        final event = events[index];
-        final summary = event['summary'] ?? 'No title';
-        final start = event['start']?['dateTime'] ?? event['start']?['date'] ?? 'No start time';
-
-        return ListTile(
-          title: Text(summary),
-          subtitle: Text(start),
-          leading: const Icon(Icons.event),
-        );
-      },
+    return Scaffold(
+      appBar: AppBar(title: Text('Google Calendar Events')),
+      body: _events.isEmpty
+        ? const Center(child: Text('No events found or still loading...'))
+        : ListView.builder(
+        itemCount: _events.length,
+        itemBuilder: (context, index) {
+          final event = _events[index];
+          return ListTile(
+            title: Text(event.summary ?? 'No Title'),
+            subtitle: Text(event.start?.dateTime?.toString() ?? 'No Date'),
+          );
+        },
+      ),
     );
   }
 }

@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import '../services/google_signin_service.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   Future<void> signInWithGoogle(BuildContext context) async {
-    final googleUser = await GoogleSignIn(
-  scopes: [
-    'email',
-    'https://www.googleapis.com/auth/calendar.readonly',
-  ],
-).signIn();
+    final googleUser = await googleSignIn.signIn();
     if (googleUser == null) return;
 
     final googleAuth = await googleUser.authentication;
@@ -21,7 +16,6 @@ class LoginPage extends StatelessWidget {
     );
 
     await FirebaseAuth.instance.signInWithCredential(credential);
-    // Go to home page
     Navigator.pushReplacementNamed(context, '/home');
   }
 
