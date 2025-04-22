@@ -97,6 +97,10 @@ class PomodoroPageState extends State<PomodoroPage> {
       } else {
         // If currently in work, switch to break and increment completed sessions
         _completedSessions++;
+        // Reset sessions counter after completing all sessions
+        if (_completedSessions >= _sessionsBeforeLongBreak) {
+          _completedSessions = 0;
+        }
         _isBreak = true;
         _secondsRemaining = _completedSessions % _sessionsBeforeLongBreak == 0
             ? _longBreakDuration * 60
