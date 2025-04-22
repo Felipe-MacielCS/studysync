@@ -3,8 +3,10 @@ import 'package:googleapis/calendar/v3.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 
-/// Scopes
-final _scopes = [CalendarApi.calendarReadonlyScope];
+/// Scopes for Google Calendar API
+final _scopes = [
+  'https://www.googleapis.com/auth/calendar',  // Full access to calendar
+];
 
 /// Returns an authenticated HTTP client
 Future<AuthClient?> getAuthClient() async {
